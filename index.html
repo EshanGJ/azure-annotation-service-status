@@ -5,9 +5,10 @@
     <style>
         body { font-family: Arial; padding: 20px; }
         table { border-collapse: collapse; width: 100%; }
-        td, th { padding: 8px; border: 1px solid #ccc; }
+        td, th { padding: 8px; border: 1px solid #ccc; text-align: center; }
         .online { color: green; font-weight: bold; }
         .stopped { color: red; font-weight: bold; }
+        button { padding: 5px 10px; margin: 2px; }
     </style>
 </head>
 <body>
@@ -23,18 +24,20 @@
             <th>Memory</th>
             <th>Restarts</th>
             <th>Uptime</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody id="pm2-table"></tbody>
 </table>
 
 <script>
+const API_BASE = "https://eshan-fonix.chickenkiller.com/pm2/pm2";
+
 async function loadStatus() {
-    let res = await fetch("https://eshan-fonix.chickenkiller.com/pm2/pm2/status");
+    let res = await fetch(`${API_BASE}/status`);
     let data = await res.json();
 
     let html = "";
-
     data.forEach(proc => {
         html += `
             <tr>
@@ -44,6 +47,10 @@ async function loadStatus() {
                 <td>${(proc.memory / 1024 / 1024).toFixed(1)} MB</td>
                 <td>${proc.restarts}</td>
                 <td>${new Date(proc.uptime).toLocaleTimeString()}</td>
+                <td>
+                    <button onclick="restartProcess('${proc.name}')">Restart</button>
+                    <button onclick="stopProcess('${proc.name}')">Stop</button>
+                </td>
             </tr>
         `;
     });
@@ -51,7 +58,30 @@ async function loadStatus() {
     document.getElementById("pm2-table").innerHTML = html;
 }
 
-// refresh every 2 seconds
+async function restartProcess(name) {
+    await fetch(`${API_BASE}/restart/${name}`, { method: 'POST' });
+    alert(`Process "${name}" restarted`);
+    loadStatus();
+}
+
+async function stopProcess(name) {
+    await fetch(`${API_BASE}/stop/${name}`, { method: 'POST' });
+    alert(`Process "${name}" stopped`);
+    loadStatus();
+}
+
+// Optional: start a new process
+async function startProcess(script, name, options) {
+    await fetch(`${API_BASE}/start`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ script, name, options })
+    });
+    alert(`Process "${name}" started`);
+    loadStatus();
+}
+
+// Refresh every 2 seconds
 setInterval(loadStatus, 2000);
 loadStatus();
 </script>
