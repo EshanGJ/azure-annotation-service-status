@@ -2,6 +2,8 @@
 <html>
 <head>
     <title>PM2 Service Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -10,272 +12,773 @@
         }
         
         body {
-            font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
-            background-color: #0d1117;
-            color: #c9d1d9;
-            padding: 20px;
-            min-height: 100vh;
+            font-family: 'Roboto', 'Google Sans', sans-serif;
+            background-color: #f8f9fa;
+            color: #202124;
         }
         
-        .console-container {
-            background-color: #161b22;
-            border: 1px solid #30363d;
+        /* Top Navigation Bar */
+        .top-bar {
+            background-color: #1a73e8;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon span {
+            color: #1a73e8;
+            font-size: 24px;
+        }
+        
+        .logo-text {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 400;
+        }
+        
+        .top-bar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #4285f4;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            background: white;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            bottom: 0;
+            border-right: 1px solid #dadce0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 24px;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .sidebar-item:hover {
+            background: #f1f3f4;
+        }
+        
+        .sidebar-item.active {
+            background: #e8f0fe;
+            color: #1a73e8;
+        }
+        
+        .sidebar-item.active .material-icons {
+            color: #1a73e8;
+        }
+        
+        .sidebar-divider {
+            height: 1px;
+            background: #dadce0;
+            margin: 8px 0;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 256px;
+            margin-top: 64px;
+            padding: 24px;
+            min-height: calc(100vh - 64px);
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        
+        .page-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 28px;
+            font-weight: 400;
+            color: #202124;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            font-family: 'Google Sans', sans-serif;
+        }
+        
+        .btn-primary {
+            background: #1a73e8;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1557b0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #1a73e8;
+            border: 1px solid #dadce0;
+        }
+        
+        .btn-secondary:hover {
+            background: #f8f9fa;
+            border-color: #1a73e8;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
             border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+            padding: 20px;
+            border: 1px solid #dadce0;
         }
         
-        .console-header {
-            background-color: #21262d;
-            padding: 10px 15px;
+        .stat-label {
+            font-size: 12px;
+            color: #5f6368;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 36px;
+            font-weight: 400;
+            color: #202124;
+        }
+        
+        .stat-card.online .stat-value { color: #1e8e3e; }
+        .stat-card.stopped .stat-value { color: #d93025; }
+        .stat-card.cpu .stat-value { color: #1a73e8; }
+        .stat-card.memory .stat-value { color: #e37400; }
+        
+        /* Table Card */
+        .table-card {
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dadce0;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid #dadce0;
+        }
+        
+        .table-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .search-box {
             display: flex;
             align-items: center;
             gap: 8px;
-            border-bottom: 1px solid #30363d;
+            background: #f1f3f4;
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 300px;
         }
         
-        .console-btn {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .search-box input {
             border: none;
-        }
-        
-        .btn-red { background-color: #ff5f56; }
-        .btn-yellow { background-color: #ffbd2e; }
-        .btn-green { background-color: #27ca40; }
-        
-        .console-title {
-            color: #8b949e;
+            background: transparent;
+            outline: none;
             font-size: 14px;
-            margin-left: 10px;
+            width: 100%;
         }
         
-        .console-body {
-            padding: 20px;
-        }
-        
-        h2 {
-            color: #58a6ff;
-            margin-bottom: 5px;
-            font-size: 16px;
-        }
-        
-        h2::before {
-            content: "$ ";
-            color: #7ee787;
-        }
-        
-        .timestamp {
-            color: #6e7681;
-            font-size: 12px;
-            margin-bottom: 20px;
+        .search-box .material-icons {
+            color: #5f6368;
+            font-size: 20px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
         }
         
         th {
-            color: #7ee787;
             text-align: left;
-            padding: 10px 15px;
-            border-bottom: 1px solid #30363d;
-            font-weight: normal;
-            text-transform: uppercase;
+            padding: 12px 24px;
             font-size: 12px;
+            font-weight: 500;
+            color: #5f6368;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dadce0;
         }
         
         td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #21262d;
+            padding: 16px 24px;
+            font-size: 14px;
+            border-bottom: 1px solid #f1f3f4;
         }
         
         tr:hover {
-            background-color: #21262d;
+            background: #f8f9fa;
         }
         
-        .status {
-            padding: 3px 10px;
-            border-radius: 3px;
+        .process-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .process-icon {
+            width: 36px;
+            height: 36px;
+            background: #e8f0fe;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .process-icon .material-icons {
+            color: #1a73e8;
+            font-size: 20px;
+        }
+        
+        .process-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .process-title {
+            font-weight: 500;
+            color: #1a73e8;
+        }
+        
+        .process-id {
             font-size: 12px;
-            font-weight: bold;
+            color: #5f6368;
         }
         
-        .online {
-            color: #7ee787;
-            background-color: rgba(126, 231, 135, 0.1);
-            border: 1px solid #238636;
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
         }
         
-        .stopped, .errored {
-            color: #f85149;
-            background-color: rgba(248, 81, 73, 0.1);
-            border: 1px solid #da3633;
+        .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
         }
         
-        .stopping {
-            color: #d29922;
-            background-color: rgba(210, 153, 34, 0.1);
-            border: 1px solid #9e6a03;
+        .status-badge.online {
+            background: #e6f4ea;
+            color: #1e8e3e;
+        }
+        
+        .status-badge.online .dot {
+            background: #1e8e3e;
+        }
+        
+        .status-badge.stopped {
+            background: #fce8e6;
+            color: #d93025;
+        }
+        
+        .status-badge.stopped .dot {
+            background: #d93025;
+        }
+        
+        .status-badge.errored {
+            background: #fce8e6;
+            color: #d93025;
+        }
+        
+        .status-badge.errored .dot {
+            background: #d93025;
+        }
+        
+        .status-badge.stopping {
+            background: #fef7e0;
+            color: #e37400;
+        }
+        
+        .status-badge.stopping .dot {
+            background: #e37400;
+        }
+        
+        /* Metrics */
+        .metric {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .metric-bar {
+            width: 60px;
+            height: 4px;
+            background: #e8eaed;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .metric-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .metric-fill.low { background: #1e8e3e; }
+        .metric-fill.medium { background: #e37400; }
+        .metric-fill.high { background: #d93025; }
+        
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 4px;
         }
         
         .action-btn {
-            padding: 5px 12px;
-            margin: 2px;
-            border: 1px solid #30363d;
-            background-color: #21262d;
-            color: #c9d1d9;
-            font-family: inherit;
-            font-size: 12px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
             cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
         
         .action-btn:hover {
-            background-color: #30363d;
-            border-color: #8b949e;
+            background: #f1f3f4;
         }
         
-        .action-btn.restart:hover {
-            border-color: #58a6ff;
-            color: #58a6ff;
+        .action-btn .material-icons {
+            font-size: 20px;
+            color: #5f6368;
         }
         
-        .action-btn.stop:hover {
-            border-color: #f85149;
-            color: #f85149;
+        .action-btn:hover .material-icons {
+            color: #202124;
         }
         
-        .action-btn.start:hover {
-            border-color: #7ee787;
-            color: #7ee787;
-        }
+        .action-btn.start:hover .material-icons { color: #1e8e3e; }
+        .action-btn.stop:hover .material-icons { color: #d93025; }
+        .action-btn.restart:hover .material-icons { color: #1a73e8; }
         
-        .start-section {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #30363d;
-        }
-        
-        .start-form {
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
             display: flex;
-            gap: 10px;
             align-items: center;
-            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s;
         }
         
-        .start-form input {
-            background-color: #0d1117;
-            border: 1px solid #30363d;
-            color: #c9d1d9;
-            padding: 8px 12px;
-            font-family: inherit;
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90vw;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid #dadce0;
+        }
+        
+        .modal-title {
+            font-family: 'Google Sans', sans-serif;
+            font-size: 20px;
+            font-weight: 400;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
             font-size: 14px;
+            font-weight: 500;
+            color: #202124;
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #dadce0;
             border-radius: 4px;
+            font-size: 14px;
             outline: none;
+            transition: border-color 0.2s;
         }
         
-        .start-form input:focus {
-            border-color: #58a6ff;
+        .form-input:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
         }
         
-        .start-form input::placeholder {
-            color: #6e7681;
-        }
-        
-        .prompt {
-            color: #7ee787;
-        }
-        
-        .loading {
-            color: #6e7681;
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        
-        .cursor::after {
-            content: "▋";
-            animation: blink 1s infinite;
-            color: #7ee787;
-        }
-        
-        .stats-bar {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
+        .form-hint {
             font-size: 12px;
-            color: #8b949e;
+            color: #5f6368;
+            margin-top: 4px;
         }
         
-        .stat {
+        .modal-footer {
+            padding: 16px 24px;
             display: flex;
-            gap: 5px;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid #dadce0;
         }
         
-        .stat-value {
-            color: #58a6ff;
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #323232;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 300;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .toast.success { background: #1e8e3e; }
+        .toast.error { background: #d93025; }
+        
+        /* Loading */
+        .loading-row td {
+            text-align: center;
+            padding: 40px;
+            color: #5f6368;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e8eaed;
+            border-top-color: #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Refresh indicator */
+        .refresh-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #5f6368;
+        }
+        
+        .refresh-indicator .material-icons {
+            font-size: 16px;
+            animation: spin 2s linear infinite;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 24px;
+        }
+        
+        .empty-state .material-icons {
+            font-size: 64px;
+            color: #dadce0;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state h3 {
+            font-family: 'Google Sans', sans-serif;
+            font-weight: 400;
+            font-size: 18px;
+            color: #5f6368;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            color: #80868b;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
-<div class="console-container">
-    <div class="console-header">
-        <span class="console-btn btn-red"></span>
-        <span class="console-btn btn-yellow"></span>
-        <span class="console-btn btn-green"></span>
-        <span class="console-title">pm2@eshan-fonix — bash — 120×40</span>
+<!-- Top Navigation Bar -->
+<div class="top-bar">
+    <div class="logo">
+        <div class="logo-icon">
+            <span class="material-icons">memory</span>
+        </div>
+        <span class="logo-text">PM2 Console</span>
+    </div>
+    <div class="top-bar-right">
+        <button class="icon-btn">
+            <span class="material-icons">notifications</span>
+        </button>
+        <button class="icon-btn">
+            <span class="material-icons">help_outline</span>
+        </button>
+        <div class="avatar">E</div>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-item active">
+        <span class="material-icons">dns</span>
+        Processes
+    </div>
+    <div class="sidebar-item">
+        <span class="material-icons">monitoring</span>
+        Monitoring
+    </div>
+    <div class="sidebar-item">
+        <span class="material-icons">description</span>
+        Logs
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-item">
+        <span class="material-icons">settings</span>
+        Settings
+    </div>
+    <div class="sidebar-item">
+        <span class="material-icons">info</span>
+        About
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">Process Manager</h1>
+        <div class="header-actions">
+            <div class="refresh-indicator" id="refresh-indicator">
+                <span class="material-icons">sync</span>
+                Auto-refresh
+            </div>
+            <button class="btn btn-secondary" onclick="loadStatus()">
+                <span class="material-icons" style="font-size: 18px;">refresh</span>
+                Refresh
+            </button>
+            <button class="btn btn-primary" onclick="openModal()">
+                <span class="material-icons" style="font-size: 18px;">add</span>
+                Create Process
+            </button>
+        </div>
     </div>
     
-    <div class="console-body">
-        <h2>pm2 status</h2>
-        <div class="timestamp" id="timestamp">Last updated: --</div>
-        
-        <div class="stats-bar">
-            <div class="stat">Processes: <span class="stat-value" id="total-procs">0</span></div>
-            <div class="stat">Online: <span class="stat-value" id="online-procs">0</span></div>
-            <div class="stat">Stopped: <span class="stat-value" id="stopped-procs">0</span></div>
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Processes</div>
+            <div class="stat-value" id="stat-total">-</div>
         </div>
-        
+        <div class="stat-card online">
+            <div class="stat-label">Online</div>
+            <div class="stat-value" id="stat-online">-</div>
+        </div>
+        <div class="stat-card stopped">
+            <div class="stat-label">Stopped</div>
+            <div class="stat-value" id="stat-stopped">-</div>
+        </div>
+        <div class="stat-card memory">
+            <div class="stat-label">Total Memory</div>
+            <div class="stat-value" id="stat-memory">-</div>
+        </div>
+    </div>
+    
+    <!-- Table Card -->
+    <div class="table-card">
+        <div class="table-header">
+            <span class="table-title">All Processes</span>
+            <div class="search-box">
+                <span class="material-icons">search</span>
+                <input type="text" placeholder="Filter processes" id="search-input" onkeyup="filterTable()">
+            </div>
+        </div>
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
+                    <th>Process</th>
                     <th>Status</th>
                     <th>CPU</th>
                     <th>Memory</th>
-                    <th>↻</th>
+                    <th>Restarts</th>
                     <th>Uptime</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody id="pm2-table">
-                <tr><td colspan="8" class="loading">Loading processes...</td></tr>
+                <tr class="loading-row">
+                    <td colspan="7">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 12px;">Loading processes...</p>
+                    </td>
+                </tr>
             </tbody>
         </table>
-        
-        <div class="start-section">
-            <div class="prompt">$ pm2 start</div>
-            <div class="start-form">
-                <input type="text" id="script-path" placeholder="script.js or path" size="25">
-                <input type="text" id="process-name" placeholder="--name myapp" size="20">
-                <button class="action-btn start" onclick="startNewProcess()">▶ Start</button>
+    </div>
+</div>
+
+<!-- Create Process Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 class="modal-title">Create new process</h2>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Script path *</label>
+                <input type="text" class="form-input" id="script-path" placeholder="e.g., /home/user/app.js">
+                <div class="form-hint">The path to your Node.js script or executable</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Process name</label>
+                <input type="text" class="form-input" id="process-name" placeholder="e.g., my-app">
+                <div class="form-hint">A unique name for this process (optional)</div>
             </div>
         </div>
-        
-        <div style="margin-top: 20px; color: #6e7681;">
-            <span class="prompt">$</span> <span class="cursor"></span>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="startNewProcess()">Create</button>
         </div>
     </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+    <span class="material-icons">check_circle</span>
+    <span id="toast-message">Action completed</span>
 </div>
 
 <script>
@@ -283,7 +786,6 @@ const API_BASE = "https://eshan-fonix.chickenkiller.com/pm2";
 
 function formatUptime(ms) {
     if (!ms || ms <= 0) return '-';
-    
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -295,68 +797,178 @@ function formatUptime(ms) {
     return `${seconds}s`;
 }
 
+function getMetricLevel(value, max) {
+    const percent = (value / max) * 100;
+    if (percent < 50) return 'low';
+    if (percent < 80) return 'medium';
+    return 'high';
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    toast.className = `toast ${type} show`;
+    toastMessage.textContent = message;
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function openModal() {
+    document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal(event) {
+    if (!event || event.target === document.getElementById('modal-overlay')) {
+        document.getElementById('modal-overlay').classList.remove('active');
+        document.getElementById('script-path').value = '';
+        document.getElementById('process-name').value = '';
+    }
+}
+
+function filterTable() {
+    const filter = document.getElementById('search-input').value.toLowerCase();
+    const rows = document.querySelectorAll('#pm2-table tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+}
+
 async function loadStatus() {
     try {
-        let res = await fetch(`${API_BASE}/status`);
-        let data = await res.json();
+        const res = await fetch(`${API_BASE}/status`);
+        const data = await res.json();
 
         // Update stats
-        document.getElementById('total-procs').textContent = data.length;
-        document.getElementById('online-procs').textContent = data.filter(p => p.status === 'online').length;
-        document.getElementById('stopped-procs').textContent = data.filter(p => p.status === 'stopped').length;
-        document.getElementById('timestamp').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+        const totalMemory = data.reduce((sum, p) => sum + (p.memory || 0), 0);
+        document.getElementById('stat-total').textContent = data.length;
+        document.getElementById('stat-online').textContent = data.filter(p => p.status === 'online').length;
+        document.getElementById('stat-stopped').textContent = data.filter(p => p.status !== 'online').length;
+        document.getElementById('stat-memory').textContent = `${(totalMemory / 1024 / 1024).toFixed(0)} MB`;
 
-        let html = "";
+        if (data.length === 0) {
+            document.getElementById('pm2-table').innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <span class="material-icons">dns</span>
+                            <h3>No processes found</h3>
+                            <p>Create a new process to get started</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let html = '';
         data.forEach((proc, index) => {
             const uptime = proc.status === 'online' ? formatUptime(Date.now() - proc.uptime) : '-';
+            const cpuLevel = getMetricLevel(proc.cpu, 100);
+            const memMB = (proc.memory / 1024 / 1024).toFixed(1);
+            const memLevel = getMetricLevel(memMB, 512);
+            
             html += `
                 <tr>
-                    <td style="color: #6e7681;">${index}</td>
-                    <td style="color: #58a6ff;">${proc.name}</td>
-                    <td><span class="status ${proc.status}">${proc.status}</span></td>
-                    <td>${proc.cpu}%</td>
-                    <td>${(proc.memory / 1024 / 1024).toFixed(1)} MB</td>
-                    <td style="color: ${proc.restarts > 0 ? '#d29922' : '#6e7681'};">${proc.restarts}</td>
+                    <td>
+                        <div class="process-name">
+                            <div class="process-icon">
+                                <span class="material-icons">memory</span>
+                            </div>
+                            <div class="process-info">
+                                <span class="process-title">${proc.name}</span>
+                                <span class="process-id">ID: ${index}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge ${proc.status}">
+                            <span class="dot"></span>
+                            ${proc.status.charAt(0).toUpperCase() + proc.status.slice(1)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="metric">
+                            <span>${proc.cpu}%</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill ${cpuLevel}" style="width: ${Math.min(proc.cpu, 100)}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="metric">
+                            <span>${memMB} MB</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill ${memLevel}" style="width: ${Math.min(memMB / 512 * 100, 100)}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${proc.restarts}</td>
                     <td>${uptime}</td>
                     <td>
-                        <button class="action-btn restart" onclick="restartProcess('${proc.name}')">↻</button>
-                        <button class="action-btn stop" onclick="stopProcess('${proc.name}')">■</button>
-                        <button class="action-btn start" onclick="startExisting('${proc.name}')">▶</button>
+                        <div class="actions">
+                            <button class="action-btn start" onclick="startProcess('${proc.name}')" title="Start">
+                                <span class="material-icons">play_arrow</span>
+                            </button>
+                            <button class="action-btn restart" onclick="restartProcess('${proc.name}')" title="Restart">
+                                <span class="material-icons">refresh</span>
+                            </button>
+                            <button class="action-btn stop" onclick="stopProcess('${proc.name}')" title="Stop">
+                                <span class="material-icons">stop</span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
         });
 
-        if (data.length === 0) {
-            html = '<tr><td colspan="8" style="color: #6e7681;">No processes found</td></tr>';
-        }
-
-        document.getElementById("pm2-table").innerHTML = html;
+        document.getElementById('pm2-table').innerHTML = html;
     } catch (err) {
-        document.getElementById("pm2-table").innerHTML = 
-            `<tr><td colspan="8" style="color: #f85149;">Error: ${err.message}</td></tr>`;
+        document.getElementById('pm2-table').innerHTML = `
+            <tr>
+                <td colspan="7">
+                    <div class="empty-state">
+                        <span class="material-icons" style="color: #d93025;">error</span>
+                        <h3>Failed to load processes</h3>
+                        <p>${err.message}</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+}
+
+async function startProcess(name) {
+    try {
+        await fetch(`${API_BASE}/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        showToast(`Process "${name}" started successfully`);
+        loadStatus();
+    } catch (err) {
+        showToast(`Failed to start "${name}"`, 'error');
     }
 }
 
 async function restartProcess(name) {
-    if (!confirm(`Restart "${name}"?`)) return;
-    await fetch(`${API_BASE}/restart/${name}`, { method: 'POST' });
-    loadStatus();
+    try {
+        await fetch(`${API_BASE}/restart/${name}`, { method: 'POST' });
+        showToast(`Process "${name}" restarted successfully`);
+        loadStatus();
+    } catch (err) {
+        showToast(`Failed to restart "${name}"`, 'error');
+    }
 }
 
 async function stopProcess(name) {
-    if (!confirm(`Stop "${name}"?`)) return;
-    await fetch(`${API_BASE}/stop/${name}`, { method: 'POST' });
-    loadStatus();
-}
-
-async function startExisting(name) {
-    await fetch(`${API_BASE}/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name })
-    });
-    loadStatus();
+    try {
+        await fetch(`${API_BASE}/stop/${name}`, { method: 'POST' });
+        showToast(`Process "${name}" stopped successfully`);
+        loadStatus();
+    } catch (err) {
+        showToast(`Failed to stop "${name}"`, 'error');
+    }
 }
 
 async function startNewProcess() {
@@ -364,27 +976,30 @@ async function startNewProcess() {
     const name = document.getElementById('process-name').value.trim();
     
     if (!script) {
-        alert('Please enter a script path');
+        showToast('Please enter a script path', 'error');
         return;
     }
     
-    await fetch(`${API_BASE}/start`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            script, 
-            name: name || script.split('/').pop().replace('.js', '')
-        })
-    });
-    
-    document.getElementById('script-path').value = '';
-    document.getElementById('process-name').value = '';
-    loadStatus();
+    try {
+        await fetch(`${API_BASE}/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                script, 
+                name: name || script.split('/').pop().replace('.js', '')
+            })
+        });
+        showToast('Process created successfully');
+        closeModal();
+        loadStatus();
+    } catch (err) {
+        showToast('Failed to create process', 'error');
+    }
 }
 
-// Refresh every 2 seconds
-setInterval(loadStatus, 2000);
+// Initial load and auto-refresh
 loadStatus();
+setInterval(loadStatus, 3000);
 </script>
 
 </body>
