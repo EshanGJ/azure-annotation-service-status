@@ -573,12 +573,18 @@ async function startNewProcess() {
 // --- Utils ---
 function openModal() { document.getElementById('modal-overlay').classList.add('active'); }
 function closeModal(e) { if (!e || e.target === document.getElementById('modal-overlay') || e.target.closest('.btn-secondary')) document.getElementById('modal-overlay').classList.remove('active'); }
+
+// FIXED: CHECK IF SEARCH INPUT EXISTS BEFORE USING IT
 function filterGrid() {
-    const term = document.getElementById('search-input').value.toLowerCase();
+    const searchInput = document.getElementById('search-input');
+    // If input is missing (commented out), assume empty search term
+    const term = searchInput ? searchInput.value.toLowerCase() : '';
+    
     document.querySelectorAll('.process-card').forEach(card => {
         card.style.display = card.dataset.name.includes(term) ? 'flex' : 'none';
     });
 }
+
 function initDashboard() { loadStatus(); window.refreshInterval = setInterval(loadStatus, 3000); }
 
 if (authHeader) { document.getElementById('login-overlay').classList.add('hidden'); initDashboard(); } else { showLogin(); }
