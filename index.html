@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PM2 Service Monitor</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        td, th { padding: 8px; border: 1px solid #ccc; }
+        .online { color: green; font-weight: bold; }
+        .stopped { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>PM2 Service Status</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>CPU</th>
+            <th>Memory</th>
+            <th>Restarts</th>
+            <th>Uptime</th>
+        </tr>
+    </thead>
+    <tbody id="pm2-table"></tbody>
+</table>
+
+<script>
+async function loadStatus() {
+    let res = await fetch("http://localhost:3001/status");
+    let data = await res.json();
+
+    let html = "";
+
+    data.forEach(proc => {
+        html += `
+            <tr>
+                <td>${proc.name}</td>
+                <td class="${proc.status}">${proc.status}</td>
+                <td>${proc.cpu}%</td>
+                <td>${(proc.memory / 1024 / 1024).toFixed(1)} MB</td>
+                <td>${proc.restarts}</td>
+                <td>${new Date(proc.uptime).toLocaleTimeString()}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("pm2-table").innerHTML = html;
+}
+
+// refresh every 2 seconds
+setInterval(loadStatus, 2000);
+loadStatus();
+</script>
+
+</body>
+</html>
